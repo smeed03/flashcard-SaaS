@@ -6,8 +6,7 @@ import {db} from "/firebase"
 import {Paper, Container, Button, TextField, Typography, Box, Grid,
      Card, CardContent, CardActionArea, Dialog, DialogTitle, 
      DialogContent, DialogContentText, DialogActions} from "@mui/material"
-import { collection, deleteDoc, doc, query, getDoc, setDoc, getDocs, 
-    writeBatch } from "firebase/firestore"
+import { collection, doc, getDoc, writeBatch } from "firebase/firestore"
 
 export default function Generate() {
     const {isLoaded, isSignedIn, user} = useUser()
@@ -44,38 +43,35 @@ export default function Generate() {
 
     const saveFlashcards = async () => {
         if (!name) {
-            alert('Please enter a name')
-            return
+            alert('Please enter a name');
+            return;
         }
-
-        const batch = writeBatch(db)
-        const userDocRef = doc(collection(db, 'users'), user.id)
-        const docSnap = await getDoc(userDocRef)
-
-        if (!docSnap.exists()) {
-            const collections = docSnap.data().flashcards || []
+    
+        const batch = writeBatch(db);
+        const userDocRef = doc(collection(db, 'users'), user.id);
+        const docSnap = await getDoc(userDocRef);
+    
+        let collections = [];
+        if (docSnap.exists()) {
+            collections = docSnap.data().flashcards || [];
             if (collections.find((f) => f.name === name)) {
-                alert('Flashcard set with this name already exists')
-                return
-            }
-            else {
-                collections.push({name})
-                batch.set(userDocRef, {flashcards: collections}, {merge: true})
+                alert('Flashcard set with this name already exists');
+                return;
             }
         }
-        else {
-            batch.set(userDocRef, {flashcards: [{name}]})
-        }
-
-        const colRef = collection(userDocRef, name)
+    
+        collections.push({ name });
+        batch.set(userDocRef, { flashcards: collections }, { merge: true });
+    
+        const colRef = collection(userDocRef, name);
         flashcards.forEach((flashcard) => {
-            const cardDocRef = doc(colRef)
-            batch.set(cardDocRef, flashcard)
-        })
-
-        await batch.commit()
-        handleClose()
-        router.push('/flashcards')
+            const cardDocRef = doc(colRef);
+            batch.set(cardDocRef, flashcard);
+        });
+    
+        await batch.commit();
+        handleClose();
+        router.push('/flashcards'); // Ensure this route exists
     }
 
     return <Container maxWidth="md">

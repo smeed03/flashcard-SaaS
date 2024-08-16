@@ -1,4 +1,4 @@
-import {AppBar, Container, Button, Toolbar, Typography, Box, Grid} from "@mui/material"
+import {AppBar, Button, Toolbar, Typography, Box} from "@mui/material"
 import Link from "next/link"
 import {SignIn} from "@clerk/nextjs"
 
@@ -8,7 +8,7 @@ export default function SignUpPage() {
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" style={{flexGrow: 1}}>
-                        Flashcard SaaS
+                        MemorEase
                     </Typography>
                     <Button color="inherit">
                         <Link href="/sign-in" passHref>Sign In</Link>
@@ -25,7 +25,7 @@ export default function SignUpPage() {
             alignItems="center"
             justifyContent="center"
             >
-                <Typography variant="h4">Sign In</Typography>
+                <Typography variant="h4" gutterBottom>Sign In</Typography>
                 <SignIn />
             </Box>
         </container>
