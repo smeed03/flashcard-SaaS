@@ -21,4 +21,67 @@ body {
   color: #1976d2;
 }
 
+.MuiButton-containedSecondary {
+  background-color: #dc004e;
+  color: white;
+}
+
+.MuiButton-outlinedSecondary {
+  border-color: #dc004e;
+  color: #dc004e;
+}
+
+.pricing-section {
+  text-align: center;
+}
+
+.pricing-card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.pricing-card:hover {
+  transform: scale(1.05);
+}
+
+.pricing-card h5 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.pricing-card h6 {
+  margin: 10px 0;
+  font-size: 20px;
+  color: #007bff;
+}
+
+.pricing-card p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.basic-plan {
+  background-color: #f9f9f9;
+}
+
+.pro-plan {
+  background-color: #fff;
+}
+
+button {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  background-color: #d4e157; /* Light green color for hover effect */
+}
+
+button:focus {
+  outline: none;
+}
+
 
