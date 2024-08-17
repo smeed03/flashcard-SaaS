@@ -1,149 +1,111 @@
+// 'use client';
+
+// import { useRouter } from 'next/navigation';
+// import { useState } from 'react';
+// import { Container, Typography, Button, Box, TextField } from '@mui/material';
+// import { loadStripe } from '@stripe/stripe-js';
+
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY); // Replace with your actual Stripe public key
+
+// export default function BasicPayment() {
+//   const [email, setEmail] = useState('');
+//   const router = useRouter();
+
+//   const handlePayment = async () => {
+//     const stripe = await stripePromise;
+
+//     const response = await fetch('/api/checkout-session-basic', { method: 'POST' });
+//     const { sessionId } = await response.json();
+
+//     const result = await stripe.redirectToCheckout({ sessionId });
+//     if (result.error) {
+//       console.error(result.error.message);
+//     }
+//   };
+
+//   return (
+//     <Container>
+//       <Box sx={{ my: 6, textAlign: 'center' }}>
+//         <Typography variant="h4" gutterBottom>
+//           Basic Plan Payment
+//         </Typography>
+//         <Typography variant="h6" gutterBottom>
+//           Please provide your email and payment details to complete the subscription.
+//         </Typography>
+//         <TextField
+//           label="Email"
+//           variant="outlined"
+//           fullWidth
+//           sx={{ mb: 2 }}
+//           value={email}
+//           onChange={(e) => setEmail(e.target.value)}
+//         />
+//         <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handlePayment}>
+//           Pay $1 Now
+//         </Button>
+//       </Box>
+//     </Container>
+//   );
+// }
+
 'use client';
 
-import { useState } from "react";
-import { ThemeProvider, CssBaseline, Switch } from "@mui/material";
-import { lightTheme, darkTheme } from "./theme";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { AppBar, Button, Toolbar, Typography, Box, Grid } from "@mui/material";
-import Head from "next/head";
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Container, Typography, Button, Box, TextField } from '@mui/material';
+import { loadStripe } from '@stripe/stripe-js';
 
-export default function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY); // Replace with your actual Stripe public key
 
-  const handleThemeToggle = () => {
-    setIsDarkMode(!isDarkMode);
+export default function BasicPayment() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
+  const router = useRouter();
+
+  const handlePayment = async () => {
+    const stripe = await stripePromise;
+
+    try {
+      const response = await fetch('/api/checkout-session-basic', { method: 'POST' });
+      const { sessionId } = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const result = await stripe.redirectToCheckout({ sessionId });
+
+      if (result.error) {
+        setError(result.error.message);
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <CssBaseline />
-      <Box
-        sx={{
-          backgroundColor: (theme) => theme.palette.background.default,
-          color: (theme) => theme.palette.text.primary,
-          minHeight: '100vh',
-          padding: 2,
-        }}
-      >
-        <Head>
-          <title>Flashcards with AI</title>
-          <meta name="description" content="Create flashcards from your text" />
-        </Head>
-
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" style={{ flexGrow: 1 }}>
-              AI-powered Flashcards
-            </Typography>
-            <Button color="inherit" href="/generate">Create Flashcards</Button>
-            <SignedOut>
-              <Button color="inherit" href="/sign-in">Login</Button>
-              <Button color="inherit" href="/sign-up">Sign Up</Button>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-            <Switch checked={isDarkMode} onChange={handleThemeToggle} color="default" />
-          </Toolbar>
-        </AppBar>
-
-        <Box
-          sx={{
-            textAlign: "center",
-            my: 4,
-          }}
-        >
-          <Typography variant="h2" gutterBottom>
-            Welcome to Flashcard SaaS
-          </Typography>
-          <Typography variant="h5" gutterBottom>
-            The easiest way to make flashcards from your text
-          </Typography>
-          <Button variant="contained" color="primary" sx={{ mt: 2, mr: 2 }} href="/generate">
-            Get Started
-          </Button>
-        </Box>
-        <Box sx={{ my: 6 }}>
-          <Typography variant="h4" gutterBottom align="center">
-            Features
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Easy Text Input
-              </Typography>
-              <Typography>
-                Just paste your text and we'll do the rest. Creating flashcards has never been easier.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Smart Flashcards
-              </Typography>
-              <Typography>
-                Our AI will parse your text and create a set of concise flashcards, perfect for studying.
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Typography variant="h6" gutterBottom>
-                Accessible Anywhere
-              </Typography>
-              <Typography>
-                Access your flashcards from any device, any time. Study on the go with ease.
-              </Typography>
-            </Grid>
-          </Grid>
-        </Box>
-        <Box sx={{ my: 6, textAlign: "center" }}>
-          <Typography variant="h4" gutterBottom>
-            Pricing
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  p: 3,
-                  border: "1px solid",
-                  borderColor: "grey.300",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Basic
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                  $1/ Month
-                </Typography>
-                <Typography>Access to basic flashcard features and limited storage</Typography>
-                <Button variant="contained" color="primary" sx={{ mt: 2 }} href="/basic-payment">
-                  Go Basic
-                </Button>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  p: 3,
-                  border: "1px solid",
-                  borderColor: "grey.300",
-                  borderRadius: 2,
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Pro
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                  $5/ Month
-                </Typography>
-                <Typography>Unlimited storage and priority support</Typography>
-                <Button variant="contained" color="primary" sx={{ mt: 2 }} href="/pro-payment">
-                  Go Pro
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
+    <Container>
+      <Box sx={{ my: 6, textAlign: 'center' }}>
+        <Typography variant="h4" gutterBottom>
+          Basic Plan Payment
+        </Typography>
+        <Typography variant="h6" gutterBottom>
+          Please provide your email and payment details to complete the purchase.
+        </Typography>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          sx={{ mb: 2 }}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {error && <Typography color="error">{error}</Typography>}
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handlePayment}>
+          Pay $1 Now
+        </Button>
       </Box>
-    </ThemeProvider>
+    </Container>
   );
 }
+
