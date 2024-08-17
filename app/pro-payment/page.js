@@ -9,17 +9,27 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY); // 
 
 export default function ProPayment() {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const handlePayment = async () => {
     const stripe = await stripePromise;
 
-    const response = await fetch('/api/checkout-session-pro', { method: 'POST' });
-    const { sessionId } = await response.json();
+    try {
+      const response = await fetch('/api/checkout-session-pro', { method: 'POST' });
+      const { sessionId } = await response.json();
 
-    const result = await stripe.redirectToCheckout({ sessionId });
-    if (result.error) {
-      console.error(result.error.message);
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const result = await stripe.redirectToCheckout({ sessionId });
+
+      if (result.error) {
+        setError(result.error.message);
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -40,6 +50,7 @@ export default function ProPayment() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {error && <Typography color="error">{error}</Typography>}
         <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handlePayment}>
           Pay $5 Now
         </Button>
