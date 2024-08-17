@@ -3,3 +3,22 @@
   padding: 0;
   margin: 0;
 }
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.MuiButton-containedPrimary {
+  background-color: #1976d2;
+  color: white;
+}
+
+.MuiButton-outlinedPrimary {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+
