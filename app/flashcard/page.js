@@ -51,56 +51,50 @@ export default function Flashcard() {
                             onClick={() => handleCardClick(index)}
                             >
                                 <CardContent>
-                                    <Box
-                                    sx= {{
+                                <Box
+                                    sx={{
                                         perspective: "1000px",
-                                        '& > div': {
+                                        '& .card': {
                                             transition: "transform 0.6s",
                                             transformStyle: "preserve-3d",
                                             position: "relative",
                                             height: "200px",
                                             width: "100%",
                                             boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-                                            transform: flipped[index]
-                                                ? "rotateY(180deg)" 
-                                                : "rotateY(0deg)",
+                                            transform: flipped[index] ? "rotateY(180deg)" : "rotateY(0deg)",
                                         },
-                                        '& > div > div': {
+                                        '& .card > .front, & .card > .back': {
                                             position: "absolute",
+                                            width: "100%",
+                                            height: "100%",
                                             backfaceVisibility: "hidden",
                                             display: "flex",
                                             justifyContent: "center",
                                             alignItems: "center",
-                                            height: "100%",
-                                            width: "100%",
                                             padding: 2,
                                             boxSizing: "border-box",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "normal",
                                         },
-                                        '& > div > div-nth-of-type(2)': {
+                                        '& .card > .back': {
                                             transform: "rotateY(180deg)",
                                         },
-                                    }}>
-                                        <div>
-                                            <div>
-                                                <Typography 
-                                                variant="h5"
-                                                component="div"
-                                                >
-                                                    {flashcard.front}
-                                                </Typography>
-                                            </div>
+                                    }}
+                                >
+                                    <div className="card">
+                                        <div className="front">
+                                            <Typography variant="h5" component="div" sx={{ textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal' }}>
+                                                {flashcard.front}
+                                            </Typography>
                                         </div>
-                                        <div>
-                                            <div>
-                                                <Typography 
-                                                variant="h5"
-                                                component="div"
-                                                >
-                                                    {flashcard.back}
-                                                </Typography>
-                                            </div>
+                                        <div className="back">
+                                            <Typography variant="h5" component="div" sx={{ textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal' }}>
+                                                {flashcard.back}
+                                            </Typography>
                                         </div>
-                                    </Box>
+                                    </div>
+                                </Box>
                                 </CardContent>
                             </CardActionArea>
                         </Card>
