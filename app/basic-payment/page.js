@@ -9,17 +9,27 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY); // 
 
 export default function BasicPayment() {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const handlePayment = async () => {
     const stripe = await stripePromise;
 
-    const response = await fetch('/api/checkout-session-basic', { method: 'POST' });
-    const { sessionId } = await response.json();
+    try {
+      const response = await fetch('/api/checkout-session-basic', { method: 'POST' });
+      const { sessionId } = await response.json();
 
-    const result = await stripe.redirectToCheckout({ sessionId });
-    if (result.error) {
-      console.error(result.error.message);
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const result = await stripe.redirectToCheckout({ sessionId });
+
+      if (result.error) {
+        setError(result.error.message);
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -30,7 +40,7 @@ export default function BasicPayment() {
           Basic Plan Payment
         </Typography>
         <Typography variant="h6" gutterBottom>
-          Please provide your email and payment details to complete the subscription.
+          Please provide your email and payment details to complete the purchase.
         </Typography>
         <TextField
           label="Email"
@@ -40,6 +50,7 @@ export default function BasicPayment() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {error && <Typography color="error">{error}</Typography>}
         <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handlePayment}>
           Pay $1 Now
         </Button>
@@ -47,3 +58,4 @@ export default function BasicPayment() {
     </Container>
   );
 }
+
